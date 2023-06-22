@@ -4,6 +4,7 @@ from tacotron2.model import Tacotron2
 from waveglow.glow import WaveGlow
 from denoiser import Denoiser
 from tacotron2.text import text_to_sequence
+import numpy as np
 
 class VoiceSynthesizer:
     def __init__(self, tacotron_model_path, waveglow_model_path):
