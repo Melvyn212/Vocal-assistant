@@ -3,9 +3,9 @@ from nlu.nlu import NLU
 from dialogue_management.dialogue import DialogueManager
 from nlg.nlg import NLG
 from tts.tts import TTS
-from wake_word.wake_word import WakeWordDetector
+from wakeword.wake_word import WakeWordDetector
+from audio_preprocessing.audio_preprocessing import AudioPreprocessor
 import pyaudio
-import time
 
 class VoiceAssistant:
     def __init__(self, config):
@@ -15,6 +15,7 @@ class VoiceAssistant:
         self.nlg = NLG(config['nlg_model_path'])
         self.tts = TTS(config['tts_model_path'])
         self.wake_word_detector = WakeWordDetector(config['wake_words'])
+        self.audio_preprocessor = AudioPreprocessor(config['audio_preprocessing_model_path'])
         self.audio = pyaudio.PyAudio()
         self.listening = True
 
@@ -23,8 +24,9 @@ class VoiceAssistant:
         while self.listening:
             wake_word = self.wake_word_detector.listen()
             if wake_word and self.wake_word_detector.is_active():
-                audio = self.listen_for_audio()
-                text = self.asr.transcribe(audio)
+                raw_audio = self.listen_for_audio()
+                preprocessed_audio = self.audio_preprocessor.process(raw_audio)
+                text = self.asr.transcribe(preprocessed_audio)
                 if "stop listening" in text:
                     self.listening = False
                     print('Listening stopped')
@@ -41,10 +43,8 @@ class VoiceAssistant:
         while True:
             data = stream.read(1024)
             frames.append(data)
-            # If the audio level is below a certain threshold, increment the silence count
             if self.is_silent(data):
                 silence_count += 1
-                # If we have 2 seconds of silence, stop recording
                 if silence_count > 32:
                     break
             else:
@@ -54,7 +54,6 @@ class VoiceAssistant:
         return b''.join(frames)
 
     def is_silent(self, data):
-        # Return True if below the 'silent' threshold
         return max(data) < 100
 
 if __name__ == '__main__':
@@ -64,7 +63,8 @@ if __name__ == '__main__':
         'dialogue_model_path': 'dialogue_management/models/',
         'nlg_model_path': 'nlg/models/',
         'tts_model_path': 'tts/models/',
-        'wake_words': ['hey assistant', 'ok assistant']
+        'wake_words': ['hey assistant', 'ok assistant'],
+        'audio_preprocessing_model_path': 'audio_preprocessing/models/',
     }
     assistant = VoiceAssistant(config)
     assistant.run()

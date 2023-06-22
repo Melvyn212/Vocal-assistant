@@ -7,7 +7,7 @@ class ASR:
         self.tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
         self.model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
 
-    def transcribe(self, waveform, sample_rate):
+    def transcribe(self, waveform):
         # Tokeniser l'audio
         input_values = self.tokenizer(waveform, return_tensors='pt').input_values
 
