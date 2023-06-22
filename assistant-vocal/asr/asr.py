@@ -1,6 +1,5 @@
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer
 import torch
-import torchaudio
 
 class ASR:
     def __init__(self):
@@ -8,10 +7,7 @@ class ASR:
         self.tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
         self.model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
 
-    def transcribe(self, audio_file):
-        # Charger le fichier audio
-        waveform, sample_rate = torchaudio.load(audio_file)
-
+    def transcribe(self, waveform, sample_rate):
         # Tokeniser l'audio
         input_values = self.tokenizer(waveform, return_tensors='pt').input_values
 
