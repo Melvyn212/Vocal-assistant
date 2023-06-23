@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from tacotron2.model import Tacotron2
 from waveglow.glow import WaveGlow
-from denoiser import Denoiser
+import denoiser
 from tacotron2.text import text_to_sequence
 import numpy as np
 
@@ -18,7 +18,7 @@ class VoiceSynthesizer:
         self.waveglow.load_state_dict(waveglow_checkpoint['model'])
         self.waveglow.eval().half()
 
-        self.denoiser = Denoiser(self.waveglow)
+        self.denoiser = denoiser(self.waveglow)
 
     def synthesize(self, text, sigma=0.666):
         sequence = np.array(text_to_sequence(text, ['english_cleaners']))[None, :]

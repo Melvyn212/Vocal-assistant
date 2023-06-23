@@ -8,6 +8,10 @@ class ASR:
         self.model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
 
     def transcribe(self, waveform):
+        # Assurez-vous que la forme d'onde est un tensor PyTorch
+        if not isinstance(waveform, torch.Tensor):
+            waveform = torch.tensor(waveform)
+
         # Tokeniser l'audio
         input_values = self.tokenizer(waveform, return_tensors='pt').input_values
 
@@ -17,7 +21,7 @@ class ASR:
         # Prédire les tokens
         predicted_ids = torch.argmax(logits, dim=-1)
 
-        # Décoder les tokens en texte
-        transcription = self.tokenizer.decode(predicted_ids[0])
+        # Décoder les tokens en texte pour chaque prédiction dans le lot
+        transcriptions = [self.tokenizer.decode(ids) for ids in predicted_ids]
 
-        return transcription
+        return transcriptions
