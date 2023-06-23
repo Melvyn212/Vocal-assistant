@@ -3,11 +3,22 @@ import torch
 
 class ASR:
     def __init__(self):
-        # Charger le tokenizer et le modèle pré-entraînés
+        """
+        Constructeur de la classe ASR. Charge le tokenizer et le modèle pré-entraînés.
+        """
         self.tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
         self.model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
 
     def transcribe(self, waveform):
+        """
+        Transcrit une forme d'onde audio en texte.
+
+        Args:
+            waveform (np.array ou torch.Tensor): La forme d'onde audio à transcrire.
+
+        Returns:
+            list[str]: La transcription du fichier audio.
+        """
         # Assurez-vous que la forme d'onde est un tensor PyTorch
         if not isinstance(waveform, torch.Tensor):
             waveform = torch.tensor(waveform)
