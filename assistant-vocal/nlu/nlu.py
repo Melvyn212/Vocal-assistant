@@ -38,6 +38,3 @@ class NLU:
         predicted_label = self.model.config.id2label[predicted_id]
 
         return predicted_label
-
-# Créer une instance de NLU avec le modèle BERT de base non censuré.
-nlu = NLU(model_name="bert-base-uncased")
