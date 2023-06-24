@@ -1,12 +1,13 @@
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer
 import torch
+from transformers import Wav2Vec2ForCTC, Wav2Vec2CTCTokenizer, Wav2Vec2FeatureExtractor
 
 class ASR:
     def __init__(self):
         """
         Constructeur de la classe ASR. Charge le tokenizer et le modèle pré-entraînés.
         """
-        self.tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
+        self.tokenizer = Wav2Vec2CTCTokenizer.from_pretrained("facebook/wav2vec2-base-960h")
+        self.feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained("facebook/wav2vec2-base-960h")
         self.model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
 
     def transcribe(self, waveform):
@@ -23,8 +24,9 @@ class ASR:
         if not isinstance(waveform, torch.Tensor):
             waveform = torch.tensor(waveform)
 
-        # Tokeniser l'audio
-        input_values = self.tokenizer(waveform, return_tensors='pt').input_values
+        # Process the waveform
+        inputs = self.feature_extractor(waveform, return_tensors='pt', sampling_rate=16000)
+        input_values = inputs.input_values
 
         # Passer l'audio par le modèle
         logits = self.model(input_values).logits
