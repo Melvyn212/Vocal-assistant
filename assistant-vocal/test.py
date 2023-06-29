@@ -15,24 +15,16 @@ output_path = recorder.record()  # Lance l'enregistrement et récupère le chemi
 print("Fichier enregistré :", output_path)
 
 
-# Charger l'audio
-waveform, sr = librosa.load(output_path, sr=16000)
+import speech_recognition as sr
 
-# Normaliser à des valeurs entre -1 et 1
-waveform = waveform / np.abs(waveform).max()
+# Créer un objet Recognizer
+r = sr.Recognizer()
 
-asr = ASR()  # Crée une instance de la classe ASR
+# Ouvrir le fichier audio
+with sr.AudioFile(output_path) as source:
+    # Lire l'audio à partir du fichier
+    audio_data = r.record(source)
+    # Transcrire l'audio en texte
+    text = r.recognize_google(audio_data)
+    print(text)
 
-# Passer à la méthode transcribe
-transcriptions = asr.transcribe(waveform)
-
-
-# Afficher les transcriptions
-for transcription in transcriptions:
-    print(transcription)
-
-# Initialize the NLU
-# Créer une instance de NLU avec le modèle BERT de base non censuré.
-nlu = NLU(model_name="bert-base-uncased")
-predicted_intent = nlu.predict_intent(transcription)
-print(f"The predicted intent of the sentence is: {predicted_intent}")

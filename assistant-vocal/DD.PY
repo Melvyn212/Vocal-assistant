@@ -1,20 +1,18 @@
-from transformers import T5ForConditionalGeneration, T5Tokenizer
-
-MAX_LENGTH=512
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
 # Initialisez le tokenizer et le modèle
-tokenizer = T5Tokenizer.from_pretrained('t5-base', model_max_length=MAX_LENGTH)
-model = T5ForConditionalGeneration.from_pretrained('t5-base')
+tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+model = GPT2LMHeadModel.from_pretrained("gpt2")
 
 # Définissez la phrase que vous voulez reformuler
-sentence = "MORNING  HAPPY TO SEE YOM"
-sentence = "paraphrase: " + sentence
+sentence = "Je suis content de te voir ce matin."
+prompt = f"Comment pouvez-vous dire cela différemment: {sentence}?"
 
-# Encodez la phrase pour le modèle T5
-inputs = tokenizer.encode(sentence, return_tensors="pt")
+# Encodez la phrase pour le modèle GPT-2
+inputs = tokenizer.encode(prompt, return_tensors='pt')
 
 # Générez la sortie
-outputs = model.generate(inputs, max_length=40, num_return_sequences=1, temperature=0.7)
+outputs = model.generate(inputs, max_length=100, num_return_sequences=1, temperature=0.7)
 
 # Décodez la sortie
 decoded = tokenizer.decode(outputs[0])
