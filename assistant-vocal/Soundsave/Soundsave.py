@@ -1,28 +1,24 @@
-import sounddevice as sd
-import numpy as np
-from scipy.io.wavfile import write
+import speech_recognition as sr
 
-class SoundRecorder:
-    def __init__(self, fs=44100, duration=5):
-        """
-        Initialise une instance de SoundRecorder avec une fréquence d'échantillonnage et une durée données.
+class AudioRecorder:
+    def __init__(self):
+        self.recognizer = sr.Recognizer()
 
-        Args:
-            fs (int): Fréquence d'échantillonnage. Par défaut à 44100.
-            duration (int): Durée de l'enregistrement en secondes. Par défaut à 5.
-        """
-        self.fs = fs
-        self.duration = duration
+    def record_audio(self, filename, duration=5):
+        with sr.Microphone() as source:
+            print("Enregistrement en cours, parlez maintenant...")
+            audio = self.recognizer.record(source, duration=duration)
+            with open(filename, "wb") as f:
+                f.write(audio.get_wav_data())
+            print("Enregistrement terminé et sauvegardé.")
 
-    def record(self,sound_path='assistant-vocal\Soundsave\Savedsound\otput.wav'):
-        """
-        Commence l'enregistrement de l'audio et sauvegarde l'audio enregistré dans un fichier .wav.
-        """
-        print("Début de l'enregistrement...")
-        myrecording = sd.rec(int(self.duration * self.fs), samplerate=self.fs, channels=2)
-        sd.wait()  # attendez que l'enregistrement se termine
-        print("Enregistrement terminé!")
-        # sauvegarder l'enregistrement dans un fichier .wav
-        write(sound_path, self.fs, myrecording) 
 
-        return sound_path
+# Création d'une instance de AudioRecorder
+recorder = AudioRecorder()
+
+# Nom du fichier où l'audio sera sauvegardé
+filename = "mon_enregistrement.wav"
+
+# Enregistrement de l'audio
+# Le paramètre duration définit la durée de l'enregistrement en secondes
+recorder.record_audio(filename, duration=10)
